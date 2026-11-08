@@ -6,10 +6,10 @@ import time
 from utils import PacketHeader, compute_checksum
 
 
-type_data = 0
-type_ack = 1
-type_end = 2
-type_start = 3
+type_data = 2
+type_ack = 3
+type_end = 1
+type_start = 0
 
 packet_size = 1024
 
