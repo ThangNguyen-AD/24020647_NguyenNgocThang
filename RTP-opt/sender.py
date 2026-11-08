@@ -118,16 +118,11 @@ def sender(receiver_ip, receiver_port, window_size):
                 if ack_seq in timers:
                     del timers[ack_seq]
 
-                advanced = False
+                
                 while acked.get(base, False):
                     del acked[base]
                     base += 1
-                    advanced = True
-
-                if base == next_seq:
-                    timer_run = False
-                elif advanced:
-                    timer_start = time.time()
+                    
 
     end_seq = 0
         
