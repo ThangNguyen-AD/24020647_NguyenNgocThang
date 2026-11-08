@@ -55,6 +55,10 @@ def sender(receiver_ip, receiver_port, window_size):
 
     total = len(chunks)
 
+    if total == 0:
+        chunks = [b'']
+        total = 1
+        
     base = 0
     next_seq = 0
     acked = {}

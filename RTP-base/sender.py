@@ -17,6 +17,7 @@ packet_size = 1024
 def sender(receiver_ip, receiver_port, window_size):
     """TODO: Open socket and send message from sys.stdin."""
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.settimeout(0.5)
 
     start_header = PacketHeader(type=type_start, seq_num=0, length=0)
     start_header.checksum = compute_checksum(bytes(start_header))
@@ -28,7 +29,7 @@ def sender(receiver_ip, receiver_port, window_size):
         try:
             data, _ = s.recvfrom(2048)
             ack_pkt = PacketHeader(data)
-            # Chỉ thoát lặp khi nhận đúng ACK
+            
             if ack_pkt.type == type_ack:
                 start_connected = True
         except socket.timeout:
@@ -53,7 +54,7 @@ def sender(receiver_ip, receiver_port, window_size):
     packet = {}
     acked_packets = set()
 
-    s.settimeout(0.5)
+
 
     while base < num_packet:
         while next_seq_num < base + window_size and next_seq_num < num_packet:
@@ -75,16 +76,12 @@ def sender(receiver_ip, receiver_port, window_size):
             if ack_pkt.type == type_ack:
                 ack_num = ack_pkt.seq_num
 
-                acked_packets.add(ack_num)
-
-                while base in acked_packets:
-                    if base in packet:
-                        del packet[base] 
-                    base += 1
-
-                    for seq in list(packet.keys()):
-                        if seq <= ack_num:
+                if ack_num >= base:
+                    for seq in range(base, ack_num + 1):
+                        if seq in packet:
                             del packet[seq]
+                    
+                    base = ack_num + 1
 
         except socket.timeout:
             for seq in range(base, next_seq_num):
