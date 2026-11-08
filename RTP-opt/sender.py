@@ -115,6 +115,9 @@ def sender(receiver_ip, receiver_port, window_size):
             if base <= ack_seq < next_seq:
                 acked[ack_seq] = True
 
+                if ack_seq in timers:
+                    del timers[ack_seq]
+
                 advanced = False
                 while acked.get(base, False):
                     del acked[base]
